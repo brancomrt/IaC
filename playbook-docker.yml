@@ -1,4 +1,4 @@
-- hosts: local
+- hosts: remoto
   gather_facts: False
   debugger: on_skipped
 
@@ -33,6 +33,11 @@
       - app.py
       - requirements.txt 
 
+  - name: checar imagem
+    command: "docker image ls --filter reference='*impacta*'" 
+    register: docker_check
+  - debug: msg={{ docker_check }}
+  
   - name: Construindo a imagem
     command: docker build -t impacta_app:1.0 .
     args:
@@ -41,11 +46,6 @@
     tags:
       - docker-build
 
-  - name: checar imagem
-    command: "docker image ls --filter reference='*impacta*'" 
-    register: docker_check
-  - debug: msg={{ docker_check }}
-  
   - name: Executando o docker-compose
     command: docker-compose up -d
     args:
